@@ -1,10 +1,10 @@
 import React from 'react';
 import { Card, CardContent, Typography, Button, List, ListItem, ListItemIcon, ListItemText, Box, Chip } from '@mui/material';
-import { Check, Star, Shield, Users, Building } from '@mui/icons-material';
+import { Check, Star, Shield, Users, Apartment } from '@mui/icons-material';
 
 const PlanCard = ({ plan, onSelect, featured }) => {
   const getIcon = () => {
-    if (plan.name.includes('Enterprise')) return <Building />;
+    if (plan.name.includes('Enterprise')) return <Apartment />;
     if (plan.name.includes('Sponsored')) return <Users />;
     if (plan.name.includes('Premium')) return <Star />;
     return <Shield />;
