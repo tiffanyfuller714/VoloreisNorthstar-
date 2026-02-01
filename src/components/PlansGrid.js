@@ -214,7 +214,7 @@ const PlansGrid = ({ onSelectPlan, onBack }) => {
           <Security />
           <VerifiedUser />
           <HealthAndSafety />
-          <SupportAgent />
+          <SupportAgentIcon />
         </Box>
       </Box>
     </Container>
