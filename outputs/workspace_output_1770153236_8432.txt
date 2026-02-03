@@ -1,0 +1,5 @@
+Switched to a new branch 'main'
+branch 'main' set up to track 'origin/main'.
+From https://github.com/tiffanyfuller714/VoloreisNorthstar-
+ * branch            main       -> FETCH_HEAD
+Already up to date.

@@ -1,0 +1,2 @@
+Switched to a new branch 'add-mount-guard-v2'
+branch 'add-mount-guard-v2' set up to track 'origin/main'.

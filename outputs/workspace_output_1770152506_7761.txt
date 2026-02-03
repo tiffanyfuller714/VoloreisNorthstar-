@@ -1,0 +1,5 @@
+github.com
+  ✓ Logged in to github.com account tiffanyfuller714 (GH_TOKEN)
+  - Active account: true
+  - Git operations protocol: https
+  - Token: github_pat_11B4UXPCA0mjhmY8BseF7q_***********************************************************

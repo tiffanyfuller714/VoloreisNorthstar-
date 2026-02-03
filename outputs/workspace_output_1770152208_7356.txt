@@ -1,0 +1,3 @@
+[add-mount-guard (root-commit) 852c1c9] Add mount guard to src/index.js to prevent 'Target container is not a DOM element' error
+ 1 file changed, 42 insertions(+)
+ create mode 100644 src/index.js

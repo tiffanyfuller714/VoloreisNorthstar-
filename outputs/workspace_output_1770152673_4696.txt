@@ -1,0 +1,2 @@
+[add-mount-guard-v2 bddf79d] Add mount guard to src/index.js to prevent 'Target container is not a DOM element' error
+ 1 file changed, 37 insertions(+), 6 deletions(-)

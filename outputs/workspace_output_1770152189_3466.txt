@@ -1,0 +1,12 @@
+/workspace
+total 40
+drwxr-xr-x 7 root root 4096 Feb  3 20:56 .
+drwxr-xr-x 6 user user 4096 Feb  3 20:56 ..
+-rw-r--r-- 1 root root   23 Feb  3 20:56 HEAD
+drwxr-xr-x 2 root root 4096 Feb  3 20:56 branches
+-rw-r--r-- 1 root root   92 Feb  3 20:56 config
+-rw-r--r-- 1 root root   73 Feb  3 20:56 description
+drwxr-xr-x 2 root root 4096 Feb  3 20:56 hooks
+drwxr-xr-x 2 root root 4096 Feb  3 20:56 info
+drwxr-xr-x 4 root root 4096 Feb  3 20:56 objects
+drwxr-xr-x 4 root root 4096 Feb  3 20:56 refs

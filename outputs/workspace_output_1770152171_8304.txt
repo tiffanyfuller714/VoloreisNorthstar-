@@ -1,0 +1,1 @@
+drwxr-xr-x  7 root root  4096 Feb  3 20:55 .git
