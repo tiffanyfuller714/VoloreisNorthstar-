@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, AppBar, Toolbar, Typography, Button, Container, Grid, Divider } from '@mui/material';
@@ -88,7 +87,7 @@ function App() {
             onSuccess={handleCheckoutSuccess}
           />
         ) : (
-          <Navigate to="/" />
+          <HomePage onViewPlans={handleViewPlans} />
         );
       default:
         return <HomePage onViewPlans={handleViewPlans} />;
