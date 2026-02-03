@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Container, 
-  Box, 
-  Typography, 
-  Paper, 
-  TextField, 
-  Button, 
-  Stepper, 
-  Step, 
+import React, { useState } from 'react';
+import {
+  Container,
+  Box,
+  Typography,
+  Paper,
+  TextField,
+  Button,
+  Stepper,
+  Step,
   StepLabel,
   Divider,
   Alert,
-  CircularProgress
+  CircularProgress,
+  Grid
 } from '@mui/material';
+
 import { ArrowBack, CheckCircle } from '@mui/icons-material';
 
 const steps = ['Account Information', 'Payment Details', 'Confirmation'];

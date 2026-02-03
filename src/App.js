@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, AppBar, Toolbar, Typography, Button } from '@mui/material';
-import { Security, Menu } from '@mui/icons-material';
+import { Box, AppBar, Toolbar, Typography, Button, Container, Grid, Divider } from '@mui/material';
+import { Security } from '@mui/icons-material';
 
 import HomePage from './components/HomePage';
 import PlansGrid from './components/PlansGrid';

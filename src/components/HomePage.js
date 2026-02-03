@@ -2,7 +2,6 @@ import React from 'react';
 import { Container, Box, Typography, Button, Grid, Card, CardContent, Fade } from '@mui/material';
 import { 
   Security, 
-  FlightTakeoff, 
   VerifiedUser, 
   Star, 
   ArrowForward,

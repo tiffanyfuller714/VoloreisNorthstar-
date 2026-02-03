@@ -1,6 +1,16 @@
 import React from 'react';
 import { Container, Box, Typography, Grid, Button } from '@mui/material';
-import { ArrowBack } from '@mui/icons-material';
+import {
+  ArrowBack,
+  FlightTakeoff,
+  Star,
+  Favorite,
+  Business,
+  Security,
+  VerifiedUser,
+  HealthAndSafety,
+  SupportAgent,
+} from '@mui/icons-material';
 import PlanCard from './PlanCard';
 import plans from '../data/plans';
 
@@ -61,7 +71,8 @@ const PlansGrid = ({ onSelectPlan, onBack }) => {
             gap: 2
           }}
         >
-          <Shield />
+          <Security />
+
           Solo Traveler Plans
         </Typography>
         <Grid container spacing={3}>
@@ -214,7 +225,7 @@ const PlansGrid = ({ onSelectPlan, onBack }) => {
           <Security />
           <VerifiedUser />
           <HealthAndSafety />
-          <SupportAgentIcon />
+          <SupportAgent />
         </Box>
       </Box>
     </Container>
