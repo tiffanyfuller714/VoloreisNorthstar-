@@ -13,6 +13,7 @@ import CustomerPortal from './portal/CustomerPortal';
 import AdminLogin from './portal/AdminLogin';
 import AdminPortal from './portal/AdminPortal';
 import ProtectedRoute from './portal/ProtectedRoute';
+import AppLayout from './components/AppLayout';
 
 const theme = createTheme({
   palette: {
@@ -75,13 +76,13 @@ function Navigation({ currentView, handleViewPlans, handleBackToHome }) {
 
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
           {isPortalRoute ? (
-            <>
+            <> 
               <Link to="/" style={{ textDecoration: 'none' }}>
                 <Button color="inherit">Back to Home</Button>
               </Link>
             </>
           ) : (
-            <>
+            <> 
               {currentView !== 'home' && (
                 <Button
                   color="inherit"
@@ -92,7 +93,7 @@ function Navigation({ currentView, handleViewPlans, handleBackToHome }) {
               )}
               
               {currentView === 'home' && (
-                <>
+                <> 
                   <Link to="/portal/login" style={{ textDecoration: 'none' }}>
                     <Button color="inherit">Login</Button>
                   </Link>
@@ -147,32 +148,6 @@ function App() {
     window.scrollTo(0, 0);
   };
 
-  const renderContent = () => {
-    switch (currentView) {
-      case 'home':
-        return <HomePage onViewPlans={handleViewPlans} />;
-      case 'plans':
-        return (
-          <PlansGrid
-            onSelectPlan={handleSelectPlan}
-            onBack={handleBackToHome}
-          />
-        );
-      case 'checkout':
-        return selectedPlan ? (
-          <Checkout
-            plan={selectedPlan}
-            onBack={handleBackToPlans}
-            onSuccess={handleCheckoutSuccess}
-          />
-        ) : (
-          <HomePage onViewPlans={handleViewPlans} />
-        );
-      default:
-        return <HomePage onViewPlans={handleViewPlans} />;
-    }
-  };
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -190,32 +165,36 @@ function App() {
             <Routes>
               {/* Portal Routes */}
               <Route path="/portal/login" element={<CustomerLogin />} />
-              <Route
-                path="/portal"
-                element={
-                  <ProtectedRoute allowRole="customer">
-                    <CustomerPortal />
-                  </ProtectedRoute>
-                }
-              />
-
               <Route path="/admin/login" element={<AdminLogin />} />
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute allowRole="admin">
-                    <AdminPortal />
-                  </ProtectedRoute>
-                }
-              />
 
-              {/* Main App Routes */}
-              <Route path="/" element={<HomePage onViewPlans={handleViewPlans} />} />
-              <Route path="/plans" element={<PlansGrid onSelectPlan={handleSelectPlan} onBack={handleBackToHome} />} />
-              <Route 
-                path="/checkout" 
-                element={selectedPlan ? <Checkout plan={selectedPlan} onBack={handleBackToPlans} onSuccess={handleCheckoutSuccess} /> : <HomePage onViewPlans={handleViewPlans} />} 
-              />
+              {/* All routes that should show scenic backgrounds are nested inside AppLayout */}
+              <Route element={<AppLayout />}> 
+                <Route
+                  path="/portal"
+                  element={
+                    <ProtectedRoute allowRole="customer">
+                      <CustomerPortal />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute allowRole="admin">
+                      <AdminPortal />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Main App Routes */}
+                <Route path="/" element={<HomePage onViewPlans={handleViewPlans} />} />
+                <Route path="/plans" element={<PlansGrid onSelectPlan={handleSelectPlan} onBack={handleBackToHome} />} />
+                <Route 
+                  path="/checkout" 
+                  element={selectedPlan ? <Checkout plan={selectedPlan} onBack={handleBackToPlans} onSuccess={handleCheckoutSuccess} /> : <HomePage onViewPlans={handleViewPlans} />} 
+                />
+              </Route>
             </Routes>
           </Box>
 
