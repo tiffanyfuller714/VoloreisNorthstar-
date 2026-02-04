@@ -1,0 +1,43 @@
+🎨 Downloading and optimizing background images for VOLOREIS...
+📥 Processing custom image...
+✅ custom variants created
+📥 Processing plans image...
+✅ plans variants created
+📥 Processing home image...
+✅ home variants created
+📥 Processing portal image...
+✅ portal variants created
+📥 Processing admin image...
+✅ admin variants created
+
+🎉 All background images downloaded and optimized!
+
+public/images/admin/:
+total 2.1M
+-rw-r--r-- 1 root root 703K Feb  4 00:58 LG.jpg
+-rw-r--r-- 1 root root 703K Feb  4 00:58 MD.jpg
+-rw-r--r-- 1 root root 703K Feb  4 00:58 SM.jpg
+
+public/images/custom/:
+total 936K
+-rw-r--r-- 1 root root 310K Feb  4 00:58 LG.jpg
+-rw-r--r-- 1 root root 310K Feb  4 00:58 MD.jpg
+-rw-r--r-- 1 root root 310K Feb  4 00:58 SM.jpg
+
+public/images/home/:
+total 3.7M
+-rw-r--r-- 1 root root 1.3M Feb  4 00:58 LG.jpg
+-rw-r--r-- 1 root root 1.3M Feb  4 00:58 MD.jpg
+-rw-r--r-- 1 root root 1.3M Feb  4 00:58 SM.jpg
+
+public/images/plans/:
+total 2.0M
+-rw-r--r-- 1 root root 654K Feb  4 00:58 LG.jpg
+-rw-r--r-- 1 root root 654K Feb  4 00:58 MD.jpg
+-rw-r--r-- 1 root root 654K Feb  4 00:58 SM.jpg
+
+public/images/portal/:
+total 876K
+-rw-r--r-- 1 root root 290K Feb  4 00:58 LG.jpg
+-rw-r--r-- 1 root root 290K Feb  4 00:58 MD.jpg
+-rw-r--r-- 1 root root 290K Feb  4 00:58 SM.jpg

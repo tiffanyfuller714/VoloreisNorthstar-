@@ -1,0 +1,3 @@
+COMMAND PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+python  653 root    3u  IPv4    587      0t0  TCP *:http-alt (LISTEN)
+python  703 root    3u  IPv4    587      0t0  TCP *:http-alt (LISTEN)

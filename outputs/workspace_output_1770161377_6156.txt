@@ -1,0 +1,4 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   222  100   164  100    58  24131   8534 --:--:-- --:--:-- --:--:-- 37000
+{"token":"tok_3tjijjrqk23_1770161377736","role":"customer","user":{"id":"cust_001","email":"customer@voloreis.com","role":"customer","customerName":"Traveler One"}}

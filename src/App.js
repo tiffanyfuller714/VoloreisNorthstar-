@@ -13,6 +13,7 @@ import CustomerPortal from './portal/CustomerPortal';
 import AdminLogin from './portal/AdminLogin';
 import AdminPortal from './portal/AdminPortal';
 import ProtectedRoute from './portal/ProtectedRoute';
+import AppLayout from './components/AppLayout';
 
 const theme = createTheme({
   palette: {
@@ -187,36 +188,38 @@ function App() {
 
           {/* Main Content */}
           <Box sx={{ flexGrow: 1 }}>
-            <Routes>
-              {/* Portal Routes */}
-              <Route path="/portal/login" element={<CustomerLogin />} />
-              <Route
-                path="/portal"
-                element={
-                  <ProtectedRoute allowRole="customer">
-                    <CustomerPortal />
-                  </ProtectedRoute>
-                }
-              />
+            <AppLayout>
+              <Routes>
+                {/* Portal Routes */}
+                <Route path="/portal/login" element={<CustomerLogin />} />
+                <Route
+                  path="/portal"
+                  element={
+                    <ProtectedRoute allowRole="customer">
+                      <CustomerPortal />
+                    </ProtectedRoute>
+                  }
+                />
 
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute allowRole="admin">
-                    <AdminPortal />
-                  </ProtectedRoute>
-                }
-              />
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute allowRole="admin">
+                      <AdminPortal />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Main App Routes */}
-              <Route path="/" element={<HomePage onViewPlans={handleViewPlans} />} />
-              <Route path="/plans" element={<PlansGrid onSelectPlan={handleSelectPlan} onBack={handleBackToHome} />} />
-              <Route 
-                path="/checkout" 
-                element={selectedPlan ? <Checkout plan={selectedPlan} onBack={handleBackToPlans} onSuccess={handleCheckoutSuccess} /> : <HomePage onViewPlans={handleViewPlans} />} 
-              />
-            </Routes>
+                {/* Main App Routes */}
+                <Route path="/" element={<HomePage onViewPlans={handleViewPlans} />} />
+                <Route path="/plans" element={<PlansGrid onSelectPlan={handleSelectPlan} onBack={handleBackToHome} />} />
+                <Route 
+                  path="/checkout" 
+                  element={selectedPlan ? <Checkout plan={selectedPlan} onBack={handleBackToPlans} onSuccess={handleCheckoutSuccess} /> : <HomePage onViewPlans={handleViewPlans} />} 
+                />
+              </Routes>
+            </AppLayout>
           </Box>
 
           {/* Footer - Only show on main pages, not portal */}
