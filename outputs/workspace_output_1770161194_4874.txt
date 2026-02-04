@@ -1,0 +1,7 @@
+
+> voloreis-api@1.0.0 start
+> node index.js
+
+🚀 VOLOREIS API server running on port 3001
+📍 Health check: http://localhost:3001/health
+🚨 EMERGENCY TRIGGERED by user cust_001 from customer_portal

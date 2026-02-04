@@ -3,7 +3,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, AppBar, Toolbar, Typography, Button, Container, Grid, Divider } from '@mui/material';
 import { Security } from '@mui/icons-material';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link as RouterLink, useLocation } from 'react-router-dom';
 
 import HomePage from './components/HomePage';
 import PlansGrid from './components/PlansGrid';
@@ -14,6 +14,7 @@ import AdminLogin from './portal/AdminLogin';
 import AdminPortal from './portal/AdminPortal';
 import ProtectedRoute from './portal/ProtectedRoute';
 import AppLayout from './components/AppLayout';
+import BottomTabs from './components/BottomTabs';
 
 const theme = createTheme({
   palette: {
@@ -59,7 +60,7 @@ function Navigation({ currentView, handleViewPlans, handleBackToHome }) {
           <Security sx={{ color: '#1976d2', fontSize: 32 }} />
           <Typography 
             variant="h6" 
-            component={isPortalRoute ? Link : "div"}
+            component={isPortalRoute ? RouterLink : "div"}
             to="/"
             sx={{ 
               fontWeight: 800,
@@ -77,9 +78,9 @@ function Navigation({ currentView, handleViewPlans, handleBackToHome }) {
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
           {isPortalRoute ? (
             <> 
-              <Link to="/" style={{ textDecoration: 'none' }}>
+              <RouterLink to="/" style={{ textDecoration: 'none' }}>
                 <Button color="inherit">Back to Home</Button>
-              </Link>
+              </RouterLink>
             </>
           ) : (
             <> 
@@ -94,9 +95,9 @@ function Navigation({ currentView, handleViewPlans, handleBackToHome }) {
               
               {currentView === 'home' && (
                 <> 
-                  <Link to="/portal/login" style={{ textDecoration: 'none' }}>
+                  <RouterLink to="/portal/login" style={{ textDecoration: 'none' }}>
                     <Button color="inherit">Login</Button>
-                  </Link>
+                  </RouterLink>
                   <Button
                     variant="contained"
                     color="primary"
@@ -151,7 +152,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           {/* Navigation */}
           <Navigation 
@@ -163,12 +164,12 @@ function App() {
           {/* Main Content */}
           <Box sx={{ flexGrow: 1 }}>
             <Routes>
-              {/* Portal Routes */}
+              {/* Auth Routes (no layout) */}
               <Route path="/portal/login" element={<CustomerLogin />} />
               <Route path="/admin/login" element={<AdminLogin />} />
 
-              {/* All routes that should show scenic backgrounds are nested inside AppLayout */}
-              <Route element={<AppLayout />}> 
+              {/* Routes that should show backgrounds */}
+              <Route element={<AppLayout />}>
                 <Route
                   path="/portal"
                   element={
@@ -190,13 +191,16 @@ function App() {
                 {/* Main App Routes */}
                 <Route path="/" element={<HomePage onViewPlans={handleViewPlans} />} />
                 <Route path="/plans" element={<PlansGrid onSelectPlan={handleSelectPlan} onBack={handleBackToHome} />} />
-                <Route 
-                  path="/checkout" 
-                  element={selectedPlan ? <Checkout plan={selectedPlan} onBack={handleBackToPlans} onSuccess={handleCheckoutSuccess} /> : <HomePage onViewPlans={handleViewPlans} />} 
+                <Route
+                  path="/checkout"
+                  element={selectedPlan ? <Checkout plan={selectedPlan} onBack={handleBackToPlans} onSuccess={handleCheckoutSuccess} /> : <HomePage onViewPlans={handleViewPlans} />}
                 />
+                <Route path="*" element={<HomePage onViewPlans={handleViewPlans} />} />
               </Route>
             </Routes>
           </Box>
+
+          <BottomTabs />
 
           {/* Footer - Only show on main pages, not portal */}
           <Box
@@ -226,13 +230,19 @@ function App() {
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer' }}>
-                      Features
+                      <RouterLink to="/features" style={{ textDecoration: 'none', color: 'inherit' }}>
+                        Features
+                      </RouterLink>
                     </Typography>
                     <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer' }}>
-                      Pricing
+                      <RouterLink to="/plans" style={{ textDecoration: 'none', color: 'inherit' }}>
+                        Pricing
+                      </RouterLink>
                     </Typography>
                     <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer' }}>
-                      Mobile App
+                      <RouterLink to="/mobile" style={{ textDecoration: 'none', color: 'inherit' }}>
+                        Mobile App
+                      </RouterLink>
                     </Typography>
                   </Box>
                 </Grid>

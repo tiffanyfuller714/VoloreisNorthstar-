@@ -15,11 +15,10 @@ export default function AdminLogin() {
     setErr("");
     try {
       const data = await api("/auth/login", { method: "POST", body: { email, password } });
-      if (data.role !== "admin") throw new Error("This login is not an admin account.");
-      setSession({ token: data.token, role: data.role });
-      nav("/admin");
-    } catch (e2) {
-      setErr(e2.message);
+      setSession({ token: data.token, role: "admin" });
+      nav("/admin", { replace: true });
+    } catch (err) {
+      setErr(err.message || "Login failed");
     }
   }
 
