@@ -1,0 +1,89 @@
+{
+  "name": "Itinerary",
+  "type": "object",
+  "properties": {
+    "traveler_id": {
+      "type": "string",
+      "description": "Associated traveler ID"
+    },
+    "trip_name": {
+      "type": "string",
+      "description": "Name of the trip"
+    },
+    "transport_type": {
+      "type": "string",
+      "enum": [
+        "plane",
+        "train",
+        "bus",
+        "solo_travel",
+        "car",
+        "boat",
+        "other"
+      ],
+      "description": "Type of transportation"
+    },
+    "departure_location": {
+      "type": "string"
+    },
+    "arrival_location": {
+      "type": "string"
+    },
+    "departure_time": {
+      "type": "string",
+      "description": "Scheduled departure time"
+    },
+    "arrival_time": {
+      "type": "string",
+      "description": "Scheduled arrival time"
+    },
+    "actual_departure_time": {
+      "type": "string",
+      "description": "Actual departure time"
+    },
+    "actual_arrival_time": {
+      "type": "string",
+      "description": "Actual arrival time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "in_progress",
+        "delayed",
+        "completed",
+        "cancelled"
+      ],
+      "default": "scheduled"
+    },
+    "flight_number": {
+      "type": "string"
+    },
+    "booking_reference": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "auto_checkin_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "last_update_request": {
+      "type": "string",
+      "description": "When we last asked for updates"
+    }
+  },
+  "required": [
+    "traveler_id",
+    "transport_type",
+    "departure_location",
+    "arrival_location",
+    "departure_time"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}
