@@ -20,7 +20,11 @@ export default function CustomerLogin() {
     });
 
     if (error) {
-      setStatus({ type: "error", message: error.message });
+      const message =
+        error.message ||
+        error.error_description ||
+        "Something went wrong sending the login link. Please try again.";
+      setStatus({ type: "error", message });
       setBusy(false);
       return;
     }
