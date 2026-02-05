@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 
 export default function CustomerPortal() {
@@ -11,6 +11,10 @@ export default function CustomerPortal() {
   const [weather, setWeather] = useState(null);
   const [weatherStatus, setWeatherStatus] = useState({ state: "idle", message: "" });
   const [lastWeatherRefresh, setLastWeatherRefresh] = useState(null);
+  const [tracking, setTracking] = useState(false);
+  const [trackStatus, setTrackStatus] = useState({ state: "idle", message: "" });
+  const [lastPosition, setLastPosition] = useState(null);
+  const watchRef = useRef(null);
 
   const destinationRegions = useMemo(() => {
     if (!traveler?.destination) return [];
@@ -41,6 +45,7 @@ export default function CustomerPortal() {
       const { data, error: dbErr } = await supabase
         .from("travelers")
         .select(`
+          id,
           first_name,
           last_name,
           email,
@@ -126,6 +131,70 @@ export default function CustomerPortal() {
     const t = setInterval(() => fetchWeather(traveler.destination), 300000);
     return () => clearInterval(t);
   }, [traveler?.destination]);
+
+  useEffect(() => {
+    return () => {
+      if (watchRef.current != null) {
+        navigator.geolocation.clearWatch(watchRef.current);
+        watchRef.current = null;
+      }
+    };
+  }, []);
+
+  async function startTracking() {
+    if (!supabase) {
+      setTrackStatus({ state: "error", message: "Supabase is not configured." });
+      return;
+    }
+    if (!navigator.geolocation) {
+      setTrackStatus({ state: "error", message: "Geolocation is not supported on this device." });
+      return;
+    }
+    if (!traveler?.id) {
+      setTrackStatus({ state: "error", message: "Missing traveler record." });
+      return;
+    }
+
+    setTrackStatus({ state: "loading", message: "Starting live tracking..." });
+    setTracking(true);
+
+    watchRef.current = navigator.geolocation.watchPosition(
+      async (pos) => {
+        const payload = {
+          traveler_id: traveler.id,
+          email: traveler.email,
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
+          source: "gps",
+          updated_at: new Date().toISOString(),
+        };
+
+        setLastPosition(payload);
+        setTrackStatus({ state: "success", message: "Live location shared." });
+
+        try {
+          await supabase.from("locations").upsert(payload, { onConflict: "traveler_id" });
+        } catch (e) {
+          setTrackStatus({ state: "error", message: e.message });
+        }
+      },
+      (err) => {
+        setTrackStatus({ state: "error", message: err.message });
+        setTracking(false);
+      },
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+    );
+  }
+
+  function stopTracking() {
+    if (watchRef.current != null) {
+      navigator.geolocation.clearWatch(watchRef.current);
+      watchRef.current = null;
+    }
+    setTracking(false);
+    setTrackStatus({ state: "idle", message: "Live tracking stopped." });
+  }
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -276,6 +345,53 @@ export default function CustomerPortal() {
             ))
           ) : (
             <div style={{ opacity: 0.7 }}>No active alerts right now.</div>
+          )}
+        </section>
+
+        <section style={{ border: "1px solid #e6e6e6", borderRadius: 14, padding: 16, background: "#fff" }}>
+          <h3 style={{ marginTop: 0 }}>Live Location Sharing</h3>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+            {!tracking ? (
+              <button
+                onClick={startTracking}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: "1px solid #0b6",
+                  cursor: "pointer",
+                  fontWeight: 700,
+                  background: "#0b6",
+                  color: "white",
+                }}
+              >
+                Start live sharing
+              </button>
+            ) : (
+              <button
+                onClick={stopTracking}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: "1px solid #999",
+                  cursor: "pointer",
+                  fontWeight: 700,
+                  background: "white",
+                }}
+              >
+                Stop sharing
+              </button>
+            )}
+            {trackStatus.message ? (
+              <span style={{ opacity: 0.8 }}>{trackStatus.message}</span>
+            ) : null}
+          </div>
+          {lastPosition ? (
+            <div style={{ marginTop: 10, opacity: 0.8 }}>
+              Last shared: {Number(lastPosition.lat).toFixed(5)}, {Number(lastPosition.lng).toFixed(5)} •{" "}
+              Accuracy {Math.round(lastPosition.accuracy)}m
+            </div>
+          ) : (
+            <div style={{ marginTop: 10, opacity: 0.7 }}>No location shared yet.</div>
           )}
         </section>
 
