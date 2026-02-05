@@ -6,7 +6,6 @@ import {
 import AdminPanelSettingsRoundedIcon from "@mui/icons-material/AdminPanelSettingsRounded";
 import { api } from "./api";
 import { getToken } from "./auth";
-import { supabase } from "../lib/supabase";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -22,6 +21,7 @@ export default function AdminPortal() {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef(new Map());
+  const [shareLocations, setShareLocations] = useState([]);
 
   useEffect(() => {
     let live = true;
@@ -78,10 +78,6 @@ export default function AdminPortal() {
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
-    if (!supabase) {
-      setMapStatus({ state: "error", message: "Supabase is not configured." });
-      return;
-    }
 
     const token = typeof window !== "undefined" ? window.__MAPBOX_TOKEN : "";
     if (!token) {
@@ -117,49 +113,46 @@ export default function AdminPortal() {
       markersRef.current.set(key, marker);
     }
 
-    function removeMarker(row) {
-      const key = row.traveler_id || row.email || row.id;
-      const existing = markersRef.current.get(key);
-      if (existing) {
-        existing.remove();
-        markersRef.current.delete(key);
-      }
-    }
-
-    async function loadInitial() {
-      const { data, error } = await supabase.from("locations").select("*");
-      if (error) {
-        setMapStatus({ state: "error", message: error.message });
-        return;
-      }
-      (data || []).forEach(upsertMarker);
-      if (data?.length) {
-        const first = data[0];
-        mapRef.current?.setCenter([first.lng, first.lat]);
-        mapRef.current?.setZoom(6);
-      }
-      setMapStatus({ state: "success", message: "Live map connected." });
-    }
-
-    loadInitial();
-
-    const channel = supabase
-      .channel("locations-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "locations" },
-        (payload) => {
-          if (payload.eventType === "DELETE") {
-            removeMarker(payload.old);
-          } else {
-            upsertMarker(payload.new);
-          }
+    async function refreshLocations() {
+      try {
+        const res = await fetch("/api/admin-locations");
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data?.error || "Failed to fetch locations");
         }
-      )
-      .subscribe();
+        const rows = data.locations || [];
+        setShareLocations(rows);
+
+        const seen = new Set();
+        rows.forEach((row) => {
+          upsertMarker(row);
+          const key = row.traveler_id || row.email || row.id;
+          if (key) seen.add(key);
+        });
+
+        markersRef.current.forEach((marker, key) => {
+          if (!seen.has(key)) {
+            marker.remove();
+            markersRef.current.delete(key);
+          }
+        });
+
+        if (rows.length) {
+          const first = rows[0];
+          mapRef.current?.setCenter([first.lng, first.lat]);
+          mapRef.current?.setZoom(6);
+        }
+        setMapStatus({ state: "success", message: "Live map connected." });
+      } catch (e) {
+        setMapStatus({ state: "error", message: e.message });
+      }
+    }
+
+    refreshLocations();
+    const t = setInterval(refreshLocations, 10000);
 
     return () => {
-      supabase.removeChannel(channel);
+      clearInterval(t);
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
@@ -200,16 +193,16 @@ export default function AdminPortal() {
               {active.map((u, idx) => {
                 const l = locMap.get(u.customerId);
                 const locLine = l
-                  ? `Last location: ${Number(l.lat).toFixed(5)}, ${Number(l.lng).toFixed(5)} • ${l.source} • ${l.timestamp}`
+                  ? `Last location: ${Number(l.lat).toFixed(5)}, ${Number(l.lng).toFixed(5)} - ${l.source} - ${l.timestamp}`
                   : "Last location: n/a";
 
-                const secondary = `Last check-in: ${u.lastCheckInAt || "n/a"} • Status: ${u.monitoringStatus || "active"} • ${locLine}`;
+                const secondary = `Last check-in: ${u.lastCheckInAt || "n/a"} - Status: ${u.monitoringStatus || "active"} - ${locLine}`;
 
                 return (
                   <React.Fragment key={u.customerId || idx}>
                     <ListItem alignItems="flex-start">
                       <ListItemText
-                        primary={`${u.customerName} • ${u.destination} • ${u.tripLengthDays}d • ${u.planName}`}
+                        primary={`${u.customerName} - ${u.destination} - ${u.tripLengthDays}d - ${u.planName}`}
                         secondary={secondary}
                       />
                     </ListItem>
@@ -244,6 +237,37 @@ export default function AdminPortal() {
                 border: "1px solid rgba(0,0,0,0.08)",
               }}
             />
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>Travelers Sharing Location</Typography>
+            <List>
+              {shareLocations.map((row) => (
+                <ListItem
+                  key={row.traveler_id || row.email}
+                  secondaryAction={
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        if (mapRef.current) {
+                          mapRef.current.flyTo({ center: [row.lng, row.lat], zoom: 8 });
+                        }
+                      }}
+                    >
+                      Focus
+                    </Button>
+                  }
+                >
+                  <ListItemText
+                    primary={row.email || row.traveler_id || "Traveler"}
+                    secondary={`Last update: ${row.updated_at || "n/a"} - ${Number(row.lat).toFixed(5)}, ${Number(row.lng).toFixed(5)}`}
+                  />
+                </ListItem>
+              ))}
+              {!shareLocations.length ? (
+                <ListItem>
+                  <ListItemText primary="No travelers sharing location yet." />
+                </ListItem>
+              ) : null}
+            </List>
           </CardContent>
         </Card>
 
