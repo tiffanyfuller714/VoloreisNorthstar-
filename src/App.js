@@ -119,11 +119,6 @@ function Navigation({ currentView, handleViewPlans, handleBackToHome }) {
 function App() {
   const [currentView, setCurrentView] = useState('home');
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const hasSupabaseEnv = !!process.env.REACT_APP_SUPABASE_URL;
-  const envBannerText = hasSupabaseEnv
-    ? "Supabase env OK"
-    : "Supabase env MISSING (REACT_APP_SUPABASE_URL)";
-
   const handleViewPlans = () => {
     setCurrentView('plans');
     window.scrollTo(0, 0);
@@ -168,19 +163,6 @@ function App() {
 
           {/* Main Content */}
           <Box sx={{ flexGrow: 1 }}>
-            <Box
-              sx={{
-                bgcolor: hasSupabaseEnv ? 'success.main' : 'error.main',
-                color: 'white',
-                py: 1,
-                px: 2,
-                fontSize: 14,
-                fontWeight: 600,
-                textAlign: 'center'
-              }}
-            >
-              {envBannerText}
-            </Box>
             <Routes>
               {/* Auth Routes (no layout) */}
               <Route path="/portal/login" element={<CustomerLogin />} />

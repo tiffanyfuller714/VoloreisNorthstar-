@@ -1,7 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const runtimeConfig = typeof window !== "undefined" ? window : {};
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || runtimeConfig.__SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || runtimeConfig.__SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   // Avoid crashing the whole app; the UI can show a banner while we fix envs.
