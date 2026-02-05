@@ -1,49 +1,76 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { Box, Card, CardContent, Typography, TextField, Button, Alert } from "@mui/material";
-import { api } from "./api";
-import { setSession } from "./auth";
+import { useState } from "react";
+import { supabase } from "../lib/supabase";
 
 export default function CustomerLogin() {
-  const nav = useNavigate();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [err, setErr] = useState("");
+  const [status, setStatus] = useState({ type: "idle", message: "" });
+  const [busy, setBusy] = useState(false);
 
-  async function onSubmit(e) {
-    e.preventDefault();
-    setErr("");
-    try {
-      const data = await api("/auth/login", { method: "POST", body: { email, password } });
-      setSession({ token: data.token, role: data.role });
-      nav("/portal");
-    } catch (e2) {
-      setErr(e2.message);
+  async function sendLink() {
+    setStatus({ type: "idle", message: "" });
+    setBusy(true);
+
+    const cleanEmail = String(email || "").trim().toLowerCase();
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email: cleanEmail,
+      options: {
+        emailRedirectTo: `${window.location.origin}/portal`,
+      },
+    });
+
+    if (error) {
+      setStatus({ type: "error", message: error.message });
+      setBusy(false);
+      return;
     }
+
+    setStatus({
+      type: "success",
+      message: "Check your email for your secure login link.",
+    });
+    setBusy(false);
   }
 
   return (
-    <Box sx={{ minHeight: "70vh", display: "grid", placeItems: "center", px: 2 }}>
-      <Card sx={{ width: "min(520px, 100%)" }}>
-        <CardContent sx={{ p: 4 }}>
-          <Typography variant="h4" sx={{ mb: 1 }}>Welcome back</Typography>
-          <Typography sx={{ opacity: 0.8, mb: 3 }}>
-            Log in to view your trip, check-ins, and safety settings.
-          </Typography>
+    <div style={{ padding: 28, maxWidth: 520 }}>
+      <h2 style={{ marginBottom: 8 }}>Customer Portal Login</h2>
+      <p style={{ opacity: 0.8, marginTop: 0 }}>
+        Use the same email you entered on the Travel Information page.
+      </p>
 
-          {err ? <Alert severity="error" sx={{ mb: 2 }}>{err}</Alert> : null}
+      <label style={{ display: "block", marginTop: 16, marginBottom: 8 }}>
+        Email
+      </label>
+      <input
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        type="email"
+        placeholder="you@email.com"
+        style={{ width: "100%", padding: 12, borderRadius: 10, border: "1px solid #ccc" }}
+      />
 
-          <Box component="form" onSubmit={onSubmit} sx={{ display: "grid", gap: 2 }}>
-            <TextField label="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <TextField label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            <Button type="submit" variant="contained" size="large">Log in</Button>
+      <button
+        onClick={sendLink}
+        disabled={!email || busy}
+        style={{
+          marginTop: 14,
+          width: "100%",
+          padding: 12,
+          borderRadius: 10,
+          border: "none",
+          cursor: "pointer",
+          fontWeight: 700,
+        }}
+      >
+        {busy ? "Sending..." : "Send login link"}
+      </button>
 
-            <Typography sx={{ mt: 1, opacity: 0.8 }}>
-              Admin? <Link to="/admin/login">Go to Admin Login</Link>
-            </Typography>
-          </Box>
-        </CardContent>
-      </Card>
-    </Box>
+      {status.message ? (
+        <div style={{ marginTop: 14 }}>
+          <strong>{status.type === "error" ? "Error:" : "Done:"}</strong> {status.message}
+        </div>
+      ) : null}
+    </div>
   );
 }

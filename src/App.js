@@ -10,6 +10,7 @@ import PlansGrid from './components/PlansGrid';
 import Checkout from './components/Checkout';
 import CustomerLogin from './portal/CustomerLogin';
 import CustomerPortal from './portal/CustomerPortal';
+import AuthGate from './portal/AuthGate';
 import AdminLogin from './portal/AdminLogin';
 import AdminPortal from './portal/AdminPortal';
 import ProtectedRoute from './portal/ProtectedRoute';
@@ -173,9 +174,9 @@ function App() {
                 <Route
                   path="/portal"
                   element={
-                    <ProtectedRoute allowRole="customer">
+                    <AuthGate>
                       <CustomerPortal />
-                    </ProtectedRoute>
+                    </AuthGate>
                   }
                 />
 
