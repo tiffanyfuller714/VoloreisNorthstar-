@@ -228,6 +228,12 @@ export default function AdminPortal() {
             {mapStatus.state === "error" ? (
               <Alert severity="error" sx={{ mb: 2 }}>{mapStatus.message}</Alert>
             ) : null}
+            <Chip
+              label={`Sharing now: ${shareLocations.length}`}
+              color="primary"
+              variant="outlined"
+              sx={{ mb: 2 }}
+            />
             <Box
               ref={mapContainerRef}
               sx={{
@@ -258,7 +264,7 @@ export default function AdminPortal() {
                 >
                   <ListItemText
                     primary={row.email || row.traveler_id || "Traveler"}
-                    secondary={`Last update: ${row.updated_at || "n/a"} - ${Number(row.lat).toFixed(5)}, ${Number(row.lng).toFixed(5)}`}
+                    secondary={`Last update: ${row.updated_at ? new Date(row.updated_at).toLocaleString() : "n/a"} - ${Number(row.lat).toFixed(5)}, ${Number(row.lng).toFixed(5)}`}
                   />
                 </ListItem>
               ))}

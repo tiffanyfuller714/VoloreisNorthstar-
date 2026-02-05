@@ -14,6 +14,7 @@ export default function CustomerPortal() {
   const [tracking, setTracking] = useState(false);
   const [trackStatus, setTrackStatus] = useState({ state: "idle", message: "" });
   const [lastPosition, setLastPosition] = useState(null);
+  const [consent, setConsent] = useState(false);
   const watchRef = useRef(null);
 
   const destinationRegions = useMemo(() => {
@@ -148,6 +149,10 @@ export default function CustomerPortal() {
     }
     if (!navigator.geolocation) {
       setTrackStatus({ state: "error", message: "Geolocation is not supported on this device." });
+      return;
+    }
+    if (!consent) {
+      setTrackStatus({ state: "error", message: "Please confirm consent before sharing." });
       return;
     }
     if (!traveler?.id) {
@@ -350,6 +355,15 @@ export default function CustomerPortal() {
 
         <section style={{ border: "1px solid #e6e6e6", borderRadius: 14, padding: 16, background: "#fff" }}>
           <h3 style={{ marginTop: 0 }}>Live Location Sharing</h3>
+          <label style={{ display: "block", marginBottom: 10 }}>
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              style={{ marginRight: 8 }}
+            />
+            I consent to share my live location with VOLOREIS monitoring.
+          </label>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
             {!tracking ? (
               <button
