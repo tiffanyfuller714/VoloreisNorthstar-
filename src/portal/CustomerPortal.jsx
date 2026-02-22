@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
+import TravelerMap from "./TravelerMap";
 
 export default function CustomerPortal() {
   const [loading, setLoading] = useState(true);
@@ -15,6 +16,7 @@ export default function CustomerPortal() {
   const [trackStatus, setTrackStatus] = useState({ state: "idle", message: "" });
   const [lastPosition, setLastPosition] = useState(null);
   const [consent, setConsent] = useState(false);
+  const [showConsentDialog, setShowConsentDialog] = useState(false);
   const watchRef = useRef(null);
 
   const destinationRegions = useMemo(() => {
@@ -79,6 +81,14 @@ export default function CustomerPortal() {
     };
   }, []);
 
+  // Show the location-consent dialog as soon as we know who the traveler is,
+  // but only if they haven't already granted consent in this session.
+  useEffect(() => {
+    if (traveler?.id && !consent) {
+      setShowConsentDialog(true);
+    }
+  }, [traveler?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   async function fetchNews(regions = []) {
     setNewsStatus({ state: "loading", message: "" });
     try {
@@ -142,7 +152,7 @@ export default function CustomerPortal() {
     };
   }, []);
 
-  async function startTracking() {
+  async function startTracking(hasConsent = consent) {
     if (!supabase) {
       setTrackStatus({ state: "error", message: "Supabase is not configured." });
       return;
@@ -151,7 +161,7 @@ export default function CustomerPortal() {
       setTrackStatus({ state: "error", message: "Geolocation is not supported on this device." });
       return;
     }
-    if (!consent) {
+    if (!hasConsent) {
       setTrackStatus({ state: "error", message: "Please confirm consent before sharing." });
       return;
     }
@@ -217,6 +227,76 @@ export default function CustomerPortal() {
 
   return (
     <div style={{ padding: 28, maxWidth: 980 }}>
+
+      {/* Location-consent dialog — shown once on first portal load */}
+      {showConsentDialog && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.55)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              background: "white",
+              borderRadius: 16,
+              padding: 32,
+              maxWidth: 440,
+              width: "90%",
+              textAlign: "center",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+            }}
+          >
+            <div style={{ fontSize: 52, marginBottom: 12 }}>📍</div>
+            <h2 style={{ marginBottom: 8 }}>Enable Location Tracking</h2>
+            <p style={{ opacity: 0.75, marginBottom: 24, lineHeight: 1.6 }}>
+              VOLOREIS would like to track your live location so your trip safety
+              team can monitor your journey in real time. Your position will be
+              displayed on a private map visible only to you and your VOLOREIS
+              monitoring team.
+            </p>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+              <button
+                onClick={() => setShowConsentDialog(false)}
+                style={{
+                  padding: "12px 24px",
+                  borderRadius: 10,
+                  border: "1px solid #ccc",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  background: "white",
+                }}
+              >
+                Not now
+              </button>
+              <button
+                onClick={() => {
+                  setConsent(true);
+                  setShowConsentDialog(false);
+                  startTracking(true);
+                }}
+                style={{
+                  padding: "12px 24px",
+                  borderRadius: 10,
+                  border: "none",
+                  background: "#1976d2",
+                  color: "white",
+                  cursor: "pointer",
+                  fontWeight: 700,
+                }}
+              >
+                Allow location tracking
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <div>
           <h2 style={{ marginBottom: 6 }}>
@@ -367,7 +447,7 @@ export default function CustomerPortal() {
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
             {!tracking ? (
               <button
-                onClick={startTracking}
+                onClick={() => startTracking()}
                 style={{
                   padding: "8px 12px",
                   borderRadius: 10,
@@ -406,6 +486,14 @@ export default function CustomerPortal() {
             </div>
           ) : (
             <div style={{ marginTop: 10, opacity: 0.7 }}>No location shared yet.</div>
+          )}
+
+          {/* Live map — visible once tracking has started or a position is available */}
+          {(tracking || lastPosition) && (
+            <TravelerMap
+              position={lastPosition}
+              destination={traveler.destination}
+            />
           )}
         </section>
 
